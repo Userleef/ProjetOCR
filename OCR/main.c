@@ -2,19 +2,27 @@
 
 
 void pause();
+void displayPicture(SDL_Surface *surface);
 
 
 int main(int argc, char *argv[])
 {
     SDL_Surface *surface = NULL;
-    surface = SDL_LoadBMP("./Image_Test/lac_en_montagne.bmp");
-    Uint8 r, g, b;
-    Uint32 pixel = getpixel(surface, 10, 10);
-    SDL_GetRGB(pixel, surface->format, &r, &g, &b);
-    printf("r: %hhu, g : %hhu, b : %hhu\n", r, g, b);
+    //surface = SDL_LoadBMP("./Image_Test/lac_en_montagne.bmp");
+    surface = IMG_Load("./Image_Test/test2.png");
 
     grayScale(surface);
+    binaryColor(surface);
 
+    findBloc(surface);
+
+    displayPicture(surface);
+
+    return EXIT_SUCCESS;
+
+}
+
+void displayPicture(SDL_Surface *surface){
   // DISPLAY PICTURE
     SDL_Surface *ecran = NULL, *imageDeFond = NULL;
     SDL_Rect positionFond;
@@ -29,8 +37,6 @@ int main(int argc, char *argv[])
     pause();
     SDL_FreeSurface(imageDeFond);
     SDL_Quit();
-    return EXIT_SUCCESS;
-
 }
 
 void pause()

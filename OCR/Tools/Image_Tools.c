@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
 
 Uint32 getpixel(SDL_Surface *surface, unsigned x, unsigned y);
 static inline Uint8* pixelref(SDL_Surface *surf, unsigned x, unsigned y);
