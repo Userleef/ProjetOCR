@@ -5,16 +5,20 @@ void pause();
 void displayPicture(SDL_Surface *surface);
 
 
-int main(int argc, char *argv[])
+int main()
 {
     SDL_Surface *surface = NULL;
     //surface = SDL_LoadBMP("./Image_Test/lac_en_montagne.bmp");
-    surface = IMG_Load("./Image_Test/test2.png");
+    surface = IMG_Load("./Image_Test/test3.jpg");
 
     grayScale(surface);
     binaryColor(surface);
 
-    findBloc(surface);
+    findBloc_H(surface);
+    findBloc_V(surface);
+    clear_H(surface);
+    clear_V(surface);
+    
 
     displayPicture(surface);
 
