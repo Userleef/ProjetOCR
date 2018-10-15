@@ -9,18 +9,24 @@ int main()
 {
     SDL_Surface *surface = NULL;
     //surface = SDL_LoadBMP("./Image_Test/lac_en_montagne.bmp");
-    surface = IMG_Load("./Image_Test/test3.jpg");
+    surface = IMG_Load("./Image_Test/algo.png");
 
     grayScale(surface);
     binaryColor(surface);
 
-    findBloc_H(surface);
-    findBloc_V(surface);
-    clear_H(surface);
-    clear_V(surface);
+    //findBloc_H(surface);
+    //findBloc_V(surface);
+
+    //clear_H(surface);
+    //clear_V(surface);
+
+    lineCut(surface);
+    charcut(surface);
+
+    SDL_Surface* test = copy_image(surface,10,100,10,100);
     
 
-    displayPicture(surface);
+    displayPicture(test);
 
     return EXIT_SUCCESS;
 
