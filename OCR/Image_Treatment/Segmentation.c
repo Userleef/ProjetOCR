@@ -17,6 +17,7 @@ void clear_V(SDL_Surface * surface);
 
 void lineCut(SDL_Surface *img);
 void charcut(SDL_Surface *surface);
+void isolateChar(SDL_Surface * surface);
 
 int averagePixelBlocLine(SDL_Surface * surface, int line){
   int w = surface -> w;
@@ -257,7 +258,7 @@ void findBloc_H(SDL_Surface * surface){
         if(blank <= average){
           int k = j - 1;
           while(blank > 0){
-            Uint32 pix = SDL_MapRGB(surface->format, 0, 0, 255);
+            Uint32 pix = SDL_MapRGB(surface->format, 180, 200, 255);
             put_pixel(surface, k, i , pix);
             blank--;
             k--;
@@ -301,7 +302,7 @@ void findBloc_V(SDL_Surface * surface){
         if(blank <= average){
           int k = j - 1;
           while(blank > 0){
-            Uint32 pix = SDL_MapRGB(surface->format, 0, 0, 255);
+            Uint32 pix = SDL_MapRGB(surface->format, 180, 200, 255);
 
             put_pixel(surface, i, k , pix);
             blank--;
@@ -541,10 +542,6 @@ void charcut(SDL_Surface *surface){
   {
     pixel = getpixel(surface, 0, j);
     SDL_GetRGB(pixel, surface->format, &r, &g, &b);
-    /*printf("%d  ",r);
-    printf("%d  ",g);
-    printf("%d  \n",b);*/
-
 
     if( b == 255 && g == 0 && r == 0){
       lineTop = j;
@@ -575,19 +572,29 @@ void charcut(SDL_Surface *surface){
             if( b == 0 && g == 0 && r == 0 && isInchar != 0){
               haveBlack = 0;
               isInchar = 0;
+
               pixel = SDL_MapRGB(surface -> format, 0, 0, 255);
               for(int k = lineTop ; k <= lineBot; k++){
                 put_pixel(surface, i-1, k, pixel);
               }
+
+              pixel = SDL_MapRGB(surface -> format, 0, 255, 0);
+              put_pixel(surface, i-1, lineTop, pixel);
+              put_pixel(surface, i-1, lineBot, pixel);
             }
           }
 
           if(haveBlack != 0 && isInchar == 0){
             isInchar = -1;
+
             pixel = SDL_MapRGB(surface -> format, 0, 0, 255);
             for(int k = lineTop ; k <= lineBot; k++){
                 put_pixel(surface, i, k, pixel);
-              }
+            }
+
+            pixel = SDL_MapRGB(surface -> format, 0, 255, 0);
+            put_pixel(surface, i, lineTop, pixel);
+            put_pixel(surface, i, lineBot, pixel);
           }
 
         }
@@ -598,4 +605,73 @@ void charcut(SDL_Surface *surface){
 
   }
 
+}
+
+
+void isolateChar(SDL_Surface * surface){
+
+  Uint32 pixel;
+  Uint8 r, g , b;
+  int x1,x2,y1,y2;
+  int save = 0;
+
+  for(int i = 0; i < (surface -> h) ; i++)
+    {
+      save = y2;
+      for(int j = 0 ; j < (surface -> w); j++)
+      {
+        pixel = getpixel(surface, j, i);
+        SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
+
+        printf("%d,%d,%d\n",r,g,b);
+
+        if(r == 0 && g == 255 && b == 0){
+          printf("---0---\n");
+          x1 = j;
+          y1 = i;
+
+          j++;
+          pixel = getpixel(surface, j, i);
+          SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
+
+          while(r != 0 || g != 255 || b != 0){
+            pixel = getpixel(surface, j, i);
+            SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
+            j++;
+          }
+          j--;
+
+
+          printf("---1---\n");
+
+          int t = i ;
+          t++;
+          pixel = getpixel(surface, j, t);
+          SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
+
+          while(r != 0 || g != 255 || b != 0){
+            pixel = getpixel(surface, j, t);
+            SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
+            t++;
+          }
+
+          x2 = j;
+          y2 = t;
+
+          printf("---2---\n");
+
+          printf("coords : %d,%d--%d,%d\n",x1,y1,x2,y2);
+          printf("---3---\n");
+
+          SDL_Surface* character = copy_image(surface,x1,x2,y1,y2);
+          printf("---4---\n");
+
+          displayPicture(character);
+        }
+      }
+
+      if( y2 != save){
+          i = y2;
+      }
+    }
 }

@@ -7,6 +7,8 @@ Uint32 getpixel(SDL_Surface *surface, unsigned x, unsigned y);
 Uint8* pixelref(SDL_Surface *surf, unsigned x, unsigned y);
 void put_pixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel);
 SDL_Surface* copy_image(SDL_Surface *img,int x1, int x2, int y1, int y2);
+void pause();
+void displayPicture(SDL_Surface *surface);
 
 
 Uint8* pixelref(SDL_Surface *surf, unsigned x, unsigned y)
@@ -49,4 +51,37 @@ SDL_Surface* copy_image(SDL_Surface *img,int x1, int x2, int y1, int y2)
     }
   }
   return(copy);
+}
+
+
+void displayPicture(SDL_Surface *surface){
+  // DISPLAY PICTURE
+    SDL_Surface *ecran = NULL, *imageDeFond = NULL;
+    SDL_Rect positionFond;
+    positionFond.x = 0;
+    positionFond.y = 0;
+    SDL_Init(SDL_INIT_VIDEO);
+    ecran = SDL_SetVideoMode(surface -> w, surface -> h, 32, SDL_HWSURFACE);
+    SDL_WM_SetCaption("Chargement d'images en SDL", NULL);
+    imageDeFond = surface;
+    SDL_BlitSurface(imageDeFond, NULL, ecran, &positionFond);
+    SDL_Flip(ecran);
+    pause();
+    SDL_FreeSurface(imageDeFond);
+    SDL_Quit();
+}
+
+void pause()
+{
+    int continuer = 1;
+    SDL_Event event;
+    while (continuer)
+    {
+        SDL_WaitEvent(&event);
+        switch(event.type)
+        {
+            case SDL_QUIT:
+                continuer = 0;
+        }
+    }
 }
