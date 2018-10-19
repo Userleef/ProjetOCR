@@ -37,6 +37,8 @@ SDL_Surface* copy_image(SDL_Surface *img,int x1, int x2, int y1, int y2)
 {
   Uint32 pixel;
   SDL_Surface* copy;
+  x2++;
+
   copy = SDL_CreateRGBSurface(SDL_HWSURFACE,
                               x2 - x1,
                               y2 - y1,
@@ -53,35 +55,35 @@ SDL_Surface* copy_image(SDL_Surface *img,int x1, int x2, int y1, int y2)
   return(copy);
 }
 
+void surface_matrice(SDL_Surface *surface,int h, int w, int matrice [h][w]){
+  Uint32 pixel;
+  Uint8 r, g, b;
 
-void displayPicture(SDL_Surface *surface){
-  // DISPLAY PICTURE
-    SDL_Surface *ecran = NULL, *imageDeFond = NULL;
-    SDL_Rect positionFond;
-    positionFond.x = 0;
-    positionFond.y = 0;
-    SDL_Init(SDL_INIT_VIDEO);
-    ecran = SDL_SetVideoMode(surface -> w, surface -> h, 32, SDL_HWSURFACE);
-    SDL_WM_SetCaption("Chargement d'images en SDL", NULL);
-    imageDeFond = surface;
-    SDL_BlitSurface(imageDeFond, NULL, ecran, &positionFond);
-    SDL_Flip(ecran);
-    pause();
-    SDL_FreeSurface(imageDeFond);
-    SDL_Quit();
-}
-
-void pause()
-{
-    int continuer = 1;
-    SDL_Event event;
-    while (continuer)
+  for(int i = 0;  i < h; i++)
+  {
+    for(int j = 0; j < w; j++)
     {
-        SDL_WaitEvent(&event);
-        switch(event.type)
-        {
-            case SDL_QUIT:
-                continuer = 0;
-        }
+      pixel = getpixel(surface, j, i);
+      SDL_GetRGB(pixel, surface->format, &r, &g, &b);
+
+      if(r == 0 && g == 0 && b == 0){
+        matrice[i][j] = 1;
+      }else{
+        matrice[i][j] = 0;
+      }
     }
+  }
 }
+
+void print_matrice( int h, int w, int T[h][w])
+{ 
+   int i, j ; 
+   for ( i = 0 ; i < h ; ++i ) 
+   { 
+      for ( j = 0 ; j < w ; ++j ){
+        printf( "%5d", T[i][j] ) ;
+      }
+      printf("\n");
+   } 
+   printf( "\n" ) ; 
+} 

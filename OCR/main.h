@@ -8,5 +8,6 @@
 #include "Tools/Image_Tools.h"
 #include "Image_Treatment/Treatment.h"
 #include "Image_Treatment/Segmentation.h"
+#include "Tools/display.h"
 
 #endif

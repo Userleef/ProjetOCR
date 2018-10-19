@@ -3,23 +3,24 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include "../Tools/Image_Tools.h"
+#include "../Tools/display.h"
 
-void colorLine(SDL_Surface * surface, int x, int y,int x_Max);
-void findBeginLine
-(SDL_Surface * surface, int x_begin, int y_begin, int* px_Min, int* py_Min);
-int findNextBlankLine(SDL_Surface * surface, int begin);
-void findEndLine
-(SDL_Surface * surface, int x_begin, int y_begin, int *x_Max, int *y_Min);
-void findBloc_H(SDL_Surface * surface);
+
 void findBloc(SDL_Surface * surface);
-void clear_H(SDL_Surface * surface);
-void clear_V(SDL_Surface * surface);
+
+void findLine(SDL_Surface * surface);
 
 void lineCut(SDL_Surface *img);
 void charcut(SDL_Surface *surface);
 void isolateChar(SDL_Surface * surface);
 
-int averagePixelBlocLine(SDL_Surface * surface, int line){
+int is_blank(SDL_Surface * surface, int x1, int x2, int y1, int y2);
+int is_space(SDL_Surface* surface,int x1,int x2, int y1, int y2, int average);
+int space_average(SDL_Surface * surface, int y1);
+
+
+
+int average_clear_H(SDL_Surface * surface, int line){
   int w = surface -> w;
 
   Uint8 r, g, b;
@@ -48,7 +49,7 @@ int averagePixelBlocLine(SDL_Surface * surface, int line){
   return 0;
 }
 
-int averagePixelBlocColumn(SDL_Surface * surface, int column){
+int average_clear_V(SDL_Surface * surface, int column){
   int h = surface -> h;
 
   Uint8 r, g, b;
@@ -77,7 +78,7 @@ int averagePixelBlocColumn(SDL_Surface * surface, int column){
   return 0;
 }
 
-int averagePixelLine(SDL_Surface * surface, int line){
+int average_findBloc_H(SDL_Surface * surface, int line){
   int w = surface -> w;
 
   Uint8 r, g, b;
@@ -106,7 +107,7 @@ int averagePixelLine(SDL_Surface * surface, int line){
   return 0;
 }
 
-int averagePixelColumn(SDL_Surface * surface, int column){
+int average_findBloc_V(SDL_Surface * surface, int column){
   int h = surface -> h;
 
   Uint8 r, g, b;
@@ -149,7 +150,7 @@ void clear_H(SDL_Surface * surface){
 
   for (int i = 0; i < h; i++)
   {
-    average = averagePixelBlocLine(surface, i) * 8;
+    average = average_clear_H(surface, i) *4;
     blank = -1;
 
     for (int j = 0; j < w; j++)
@@ -195,7 +196,7 @@ void clear_V(SDL_Surface * surface){
 
   for (int i = 0; i < w; i++)
   {
-    average = averagePixelBlocColumn(surface, i) * 1.8;
+    average = average_clear_V(surface, i) *4;
     blank = -1;
 
     for (int j = 0; j < h; j++)
@@ -241,7 +242,7 @@ void findBloc_H(SDL_Surface * surface){
 
   for (int i = 0; i < h; i++)
   {
-    average = averagePixelLine(surface, i)*4;
+    average = average_findBloc_H(surface, i)*4;
     blank = -1;
 
     for (int j = 0; j < w; j++)
@@ -283,7 +284,7 @@ void findBloc_V(SDL_Surface * surface){
 
   for (int i = 0; i < w; i++)
   {
-    average = averagePixelColumn(surface, i) * 4;
+    average = average_findBloc_V(surface, i) * 4;
     blank = -1;
     
 
@@ -315,6 +316,153 @@ void findBloc_V(SDL_Surface * surface){
       }
     }
   }
+}
+
+void VH(SDL_Surface* surface){
+  SDL_Surface* surface1 = copy_image(surface, 0, surface -> w, 0, surface -> h);
+  SDL_Surface* surface2 = copy_image(surface, 0, surface -> w, 0, surface -> h);
+  findBloc_H(surface1);
+  findBloc_V(surface2);
+  Uint8 r1, g1, b1, r2, g2, b2;
+
+  for (int i = 0; i < surface -> w; i++){
+    for (int j = 0; j < surface -> h; j++){
+      Uint32 pixel1 = getpixel(surface1, i, j);
+      SDL_GetRGB(pixel1, surface->format, &r1, &g1, &b1);
+      Uint32 pixel2 = getpixel(surface2, i, j);
+      SDL_GetRGB(pixel2, surface->format, &r2, &g2, &b2);
+      if(r1 == 180 && r1 == r2){
+        Uint32 pix = SDL_MapRGB(surface->format, 200, 0, 0);
+        put_pixel(surface, i, j , pix);
+      }
+    }
+  }
+}
+
+void findBloc(SDL_Surface * surface){
+
+  findBloc_H(surface);
+  findBloc_V(surface);
+
+  clear_H(surface);
+  clear_V(surface);
+}
+
+int findNextBlankLine(SDL_Surface *surface, int begin){
+  // printf("begin : %d\n",begin);
+  int w = surface -> w;
+  int h = surface -> h;
+
+  Uint8 r, g, b;
+  Uint32 pixel;
+
+  int HaveBlack = 0;
+
+  for (int i = begin; i < h; i++) {
+    for (int j = 0; j < w; j++) {
+      pixel = getpixel(surface, j, i);
+      SDL_GetRGB(pixel, surface->format, &r, &g, &b);
+      if(r == 0){
+        HaveBlack = 1;
+        break;
+      }
+    }
+    if(HaveBlack == 0){
+      return i;
+    }
+    HaveBlack = 0;
+    }
+  return begin;
+}
+
+void findBeginLine(SDL_Surface * surface, int x_begin, 
+                  int y_begin, int *x_Min, int *y_Min){
+
+    int w = surface -> w;
+    int h = surface -> h;
+
+    Uint8 r, g, b;
+    Uint32 pixel;
+
+    int found = 0;
+    for (int i = y_begin; i < h && found == 0; i++) {
+      for (int j = x_begin; j < w && found == 0; j++) {
+        pixel = getpixel(surface, j, i);
+        SDL_GetRGB(pixel, surface->format, &r, &g, &b);
+        if (r == 0){
+          found = 1;
+          *y_Min = i;
+        }
+      }
+    }
+
+    int y_end = findNextBlankLine(surface, *y_Min);
+    // printf("y_end : %d\n",y_end);
+
+    found = 0;
+    for (int i = x_begin; i < w && found == 0; i++) {
+      for (int j = y_begin; j < y_end && found == 0; j++) {
+        pixel = getpixel(surface, i, j);
+        SDL_GetRGB(pixel, surface->format, &r, &g, &b);
+        if (r == 0){
+          found = 1;
+          *x_Min = i;
+        }
+      }
+    }
+
+}
+
+void findEndLine(SDL_Surface * surface, int x_begin,
+                int y_begin, int *x_Max, int *y_Min){
+
+    int w = surface -> w;
+    int h = surface -> h;
+
+    Uint8 r, g, b;
+    Uint32 pixel;
+
+    int found = 0;
+    for (int i = y_begin; i < h && found == 0; i++) {
+      for (int j = x_begin; j < w && found == 0; j++) {
+        pixel = getpixel(surface, j, i);
+        SDL_GetRGB(pixel, surface->format, &r, &g, &b);
+        if (r == 0){
+          found = 1;
+          *y_Min = i;
+        }
+      }
+    }
+
+    int y_end = findNextBlankLine(surface, *y_Min);
+    // printf("y_end : %d\n",y_end);
+
+    found = 0;
+    for (int i = w - 1; i > 0 && found == 0; i--) {
+      for (int j = y_begin; j < y_end && found == 0; j++) {
+        pixel = getpixel(surface, i, j);
+        SDL_GetRGB(pixel, surface->format, &r, &g, &b);
+        if (r == 0){
+          found = 1;
+          *x_Max = i;
+        }
+      }
+    }
+
+}
+
+void colorLine(SDL_Surface * surface, int x_Min, int y,int x_Max){
+
+    Uint8 r, g , b;
+
+    for (int i = x_Min; i <= x_Max; i++) {
+      Uint32 pixel = getpixel(surface, i, y);
+      SDL_GetRGB(pixel, surface->format, &r, &g, &b);
+      if(r == 255){
+        Uint32 pix = SDL_MapRGB(surface->format, 255,150, 150);
+        put_pixel(surface, i, y , pix);
+      }
+    }
 }
 
 void findLine(SDL_Surface * surface){
@@ -359,128 +507,7 @@ void findLine(SDL_Surface * surface){
   }
 }
 
-void findBeginLine
-(SDL_Surface * surface, int x_begin, int y_begin, int *x_Min, int *y_Min){
-
-    int w = surface -> w;
-    int h = surface -> h;
-
-    Uint8 r, g, b;
-    Uint32 pixel;
-
-    int found = 0;
-    for (int i = y_begin; i < h && found == 0; i++) {
-      for (int j = x_begin; j < w && found == 0; j++) {
-        pixel = getpixel(surface, j, i);
-        SDL_GetRGB(pixel, surface->format, &r, &g, &b);
-        if (r == 0){
-          found = 1;
-          *y_Min = i;
-        }
-      }
-    }
-
-    int y_end = findNextBlankLine(surface, *y_Min);
-    // printf("y_end : %d\n",y_end);
-
-    found = 0;
-    for (int i = x_begin; i < w && found == 0; i++) {
-      for (int j = y_begin; j < y_end && found == 0; j++) {
-        pixel = getpixel(surface, i, j);
-        SDL_GetRGB(pixel, surface->format, &r, &g, &b);
-        if (r == 0){
-          found = 1;
-          *x_Min = i;
-        }
-      }
-    }
-
-}
-
-void findEndLine
-(SDL_Surface * surface, int x_begin, int y_begin, int *x_Max, int *y_Min){
-
-    int w = surface -> w;
-    int h = surface -> h;
-
-    Uint8 r, g, b;
-    Uint32 pixel;
-
-    int found = 0;
-    for (int i = y_begin; i < h && found == 0; i++) {
-      for (int j = x_begin; j < w && found == 0; j++) {
-        pixel = getpixel(surface, j, i);
-        SDL_GetRGB(pixel, surface->format, &r, &g, &b);
-        if (r == 0){
-          found = 1;
-          *y_Min = i;
-        }
-      }
-    }
-
-    int y_end = findNextBlankLine(surface, *y_Min);
-    // printf("y_end : %d\n",y_end);
-
-    found = 0;
-    for (int i = w - 1; i > 0 && found == 0; i--) {
-      for (int j = y_begin; j < y_end && found == 0; j++) {
-        pixel = getpixel(surface, i, j);
-        SDL_GetRGB(pixel, surface->format, &r, &g, &b);
-        if (r == 0){
-          found = 1;
-          *x_Max = i;
-        }
-      }
-    }
-
-}
-
-int findNextBlankLine(SDL_Surface *surface, int begin){
-  // printf("begin : %d\n",begin);
-  int w = surface -> w;
-  int h = surface -> h;
-
-  Uint8 r, g, b;
-  Uint32 pixel;
-
-  int HaveBlack = 0;
-
-  for (int i = begin; i < h; i++) {
-    for (int j = 0; j < w; j++) {
-      pixel = getpixel(surface, j, i);
-      SDL_GetRGB(pixel, surface->format, &r, &g, &b);
-      if(r == 0){
-        HaveBlack = 1;
-        break;
-      }
-    }
-    if(HaveBlack == 0){
-      return i;
-    }
-    HaveBlack = 0;
-    }
-  return begin;
-}
-
-
-void colorLine(SDL_Surface * surface, int x_Min, int y,int x_Max){
-
-    Uint8 r, g , b;
-
-    for (int i = x_Min; i <= x_Max; i++) {
-      Uint32 pixel = getpixel(surface, i, y);
-      SDL_GetRGB(pixel, surface->format, &r, &g, &b);
-      if(r == 255){
-        Uint32 pix = SDL_MapRGB(surface->format, 255, 0, 0);
-        put_pixel(surface, i, y , pix);
-      }
-    }
-}
-
-
-/* Cut the lines of the image */
-void lineCut(SDL_Surface *surface)
-{
+void lineCut(SDL_Surface *surface){
     /* Variables */
     Uint32 pixel;
     Uint8 r;
@@ -509,8 +536,13 @@ void lineCut(SDL_Surface *surface)
       {
           for(int k = 0; k < (surface -> w); k++)
           {
-            pixel = SDL_MapRGB(surface -> format, 255, 0, 0);
-            put_pixel(surface, k, i - 1, pixel);
+            if(i > 0){
+              pixel = SDL_MapRGB(surface -> format, 255, 0, 0);
+              put_pixel(surface, k, i - 1, pixel);
+            }else{
+              pixel = SDL_MapRGB(surface -> format, 255, 0, 0);
+              put_pixel(surface, k, i , pixel);
+            }
           }
           firstCut = 0;
       }
@@ -548,7 +580,7 @@ void charcut(SDL_Surface *surface){
       j++;
       pixel = getpixel(surface, 0, j);
       SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
-      while(b != 255 || g != 0 || r != 0)
+      while(j < surface -> h && (b != 255 || g != 0 || r != 0))
       {
         pixel = getpixel(surface, 0, j);
         SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
@@ -574,7 +606,7 @@ void charcut(SDL_Surface *surface){
               isInchar = 0;
 
               pixel = SDL_MapRGB(surface -> format, 0, 0, 255);
-              for(int k = lineTop ; k <= lineBot; k++){
+              for(int k = lineTop ; k < surface -> h && k <= lineBot; k++){
                 put_pixel(surface, i-1, k, pixel);
               }
 
@@ -588,7 +620,7 @@ void charcut(SDL_Surface *surface){
             isInchar = -1;
 
             pixel = SDL_MapRGB(surface -> format, 0, 0, 255);
-            for(int k = lineTop ; k <= lineBot; k++){
+            for(int k = lineTop ;k < surface -> h &&  k <= lineBot; k++){
                 put_pixel(surface, i, k, pixel);
             }
 
@@ -607,7 +639,6 @@ void charcut(SDL_Surface *surface){
 
 }
 
-
 void isolateChar(SDL_Surface * surface){
 
   Uint32 pixel;
@@ -616,40 +647,45 @@ void isolateChar(SDL_Surface * surface){
   int save = 0;
 
   for(int i = 0; i < (surface -> h) ; i++)
-    {
-      save = y2;
+  {
+    save = y2;
+    
+    pixel = getpixel(surface, 0, i);
+    SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
+
+    if(b == 255 && g == 0 && r == 0){
+      printf("---1---\n");
+      
+      int average = space_average(surface, i);
+      printf("Average = %d\n",average);
+
       for(int j = 0 ; j < (surface -> w); j++)
       {
         pixel = getpixel(surface, j, i);
         SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
 
-        printf("%d,%d,%d\n",r,g,b);
-
         if(r == 0 && g == 255 && b == 0){
-          printf("---0---\n");
           x1 = j;
           y1 = i;
 
           j++;
-          pixel = getpixel(surface, j, i);
-          SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
+          r = 2;
 
-          while(r != 0 || g != 255 || b != 0){
+          while(j < surface -> w && (r != 0 || g != 255 || b != 0)){
             pixel = getpixel(surface, j, i);
             SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
             j++;
           }
+          if(j >= surface -> w){
+            break;
+          }
           j--;
-
-
-          printf("---1---\n");
 
           int t = i ;
           t++;
-          pixel = getpixel(surface, j, t);
-          SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
+          r = 2;
 
-          while(r != 0 || g != 255 || b != 0){
+          while(t < surface -> h && (r != 0 || g != 255 || b != 0)){
             pixel = getpixel(surface, j, t);
             SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
             t++;
@@ -657,21 +693,114 @@ void isolateChar(SDL_Surface * surface){
 
           x2 = j;
           y2 = t;
-
-          printf("---2---\n");
-
-          printf("coords : %d,%d--%d,%d\n",x1,y1,x2,y2);
-          printf("---3---\n");
+          j--;
 
           SDL_Surface* character = copy_image(surface,x1,x2,y1,y2);
-          printf("---4---\n");
 
-          displayPicture(character);
+          if(is_space(surface,x1,x2,y1,y2,average)){
+            printf("SPACE\n");
+          }else{
+            if(!is_blank(surface,x1,x2,y1,y2)){
+              printf("---Char :\n");
+
+              int matrice[character -> h][character -> w];
+              surface_matrice(character,character -> h, character -> w, matrice);
+              print_matrice(character -> h, character -> w, matrice);
+              printf("----\n");
+            }
+          }
+
+          display(character);
         }
       }
 
-      if( y2 != save){
-          i = y2;
+      printf("\\n\n");
+    }
+
+    if( y2 != save){
+        i = y2;
+    }
+  }
+}
+
+int is_blank(SDL_Surface * surface, int x1, int x2, int y1, int y2){
+  Uint32 pixel;
+  Uint8 r, g , b;
+  for(int i = x1;i < surface -> w && i < x2; i++){
+    for(int j = y1;j < surface -> h && j < y2; j++){
+      pixel = getpixel(surface, i, j);
+      SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
+      if(r == 0 && g == 0 && b == 0){
+        return 0;
       }
     }
+  }
+  return 1;
+}
+
+int is_space(SDL_Surface * surface, int x1, int x2, int y1, int y2, int average){
+  if(x2 - x1 < average){
+    return 0;
+  }
+
+  return is_blank(surface, x1, x2, y1, y2) == 1;
+}
+
+int space_average(SDL_Surface * surface, int y1){
+
+  Uint32 pixel;
+  Uint8 r, g , b;
+
+  r = 2;
+
+  int y2 = y1 + 1;
+  int x1,x2;
+
+  int totalBlank = 0;
+  int sum_blank_size = 0;
+
+  printf("y1 = %d\n", y1);
+
+  while(y2 < surface -> h && (b != 255 || g != 0 || r != 0)) {
+      pixel = getpixel(surface, 0, y2);
+      SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
+      y2++;
+  }
+
+  printf("y2 = %d\n", y2);
+
+  for(int i = 0; i < surface -> w; i++){
+    pixel = getpixel(surface, i, y1);
+    SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
+    if(r == 0 && g == 255 && b == 0){
+      x1 = i;
+      i++;
+      r = 2;
+      while(i < surface -> w && (r != 0 || g != 255 || b != 0)){
+        pixel = getpixel(surface, i, y1);
+        SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
+        i++;
+      }
+
+      if(i >= surface -> w){
+        break;
+      }
+      x2 = i;
+
+      if(is_blank(surface,x1,x2,y1,y2) == 1){
+        totalBlank += 1;
+        sum_blank_size += x2 - x1;
+      }
+    }
+  }
+
+
+  printf("x1 = %d\n", x1);
+  printf("x2 = %d\n", x2);
+
+  if(totalBlank != 0){
+    return sum_blank_size / totalBlank;
+  }
+
+  return 0;
 }
