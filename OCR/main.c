@@ -1,10 +1,5 @@
 #include "main.h"
 
-
-void pause();
-void displayPicture(SDL_Surface *surface);
-
-
 int main()
 {
     SDL_Surface* surface = IMG_Load("./Image_Test/fleur.jpg");
@@ -14,6 +9,7 @@ int main()
 
     //findLine(surface);
     VH(surface);
+    //findBloc(surface);
     //lineCut(surface);
     //charcut(surface);
 
@@ -21,7 +17,5 @@ int main()
 
     //isolateChar(surface);
 
-    return EXIT_SUCCESS;
-
+    return 0;
 }
-

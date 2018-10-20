@@ -12,7 +12,7 @@ void init_sdl()
         errx(1,"Could not initialize SDL: %s.\n", SDL_GetError());
 }
 
-SDL_Surface* load_image(char *path)
+SDL_Surface *load_image(char *path)
 {
     SDL_Surface *img;
 
@@ -66,37 +66,12 @@ void wait_for_keypressed()
     } while(event.type != SDL_KEYUP);
 }
 
-/*
-int main()
-{
-    SDL_Surface* image_surface;
-    SDL_Surface* screen_surface;
-
-    // TODO: Initialize the SDL
-    init_sdl();
-
-    image_surface = load_image("my_image.jpg");
-    // TODO: Display the image.
-    screen_surface = display_image(image_surface);
-
-    // TODO: Wait for a key to be pressed.
-    wait_for_keypressed();
-
-    // TODO: Free the image surface.
-    SDL_FreeSurface(image_surface);
-    // TODO: Free the screen surface.
-    SDL_FreeSurface(screen_surface);
-
-    return 0;
-}*/
-
-
 void display(SDL_Surface* surface){
     SDL_Surface* screen_surface;
 
     // TODO: Initialize the SDL
     init_sdl();
-    
+
     // TODO: Display the image.
     screen_surface = display_image(surface);
 
