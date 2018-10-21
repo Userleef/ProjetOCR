@@ -15,7 +15,7 @@ void displayPicture(SDL_Surface *surface);
 Uint8* pixelref(SDL_Surface *surface, unsigned x, unsigned y)
 {
  int bpp = surface -> format -> BytesPerPixel;
- return (Uint8*)surface -> pixels + y * surf -> pitch + x * bpp;
+ return (Uint8*)surface -> pixels + y * surface -> pitch + x * bpp;
 }
 
 Uint32 getpixel(SDL_Surface *surface, unsigned x, unsigned y)

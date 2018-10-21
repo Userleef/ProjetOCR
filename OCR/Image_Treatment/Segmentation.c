@@ -7,6 +7,8 @@
 
 
 void findBloc(SDL_Surface *surface);
+void findBloc_H(SDL_Surface *surface);
+void findBloc_V(SDL_Surface *surface);
 void findLine(SDL_Surface *surface);
 void lineCut(SDL_Surface *img);
 void charcut(SDL_Surface *surface);
@@ -14,6 +16,7 @@ void isolateChar(SDL_Surface *surface);
 int is_blank(SDL_Surface *surface, int x1, int x2, int y1, int y2);
 int is_space(SDL_Surface *surface, int x1, int x2, int y1, int y2, int average);
 int space_average(SDL_Surface *surface, int y1);
+void VH2(SDL_Surface *surface, SDL_Surface *surface1, SDL_Surface *surface2);
 
 //Calculate the average of the number of pixels colored by
 //the RLSA algorithm in a line of pixels
@@ -263,16 +266,16 @@ void clear_V(SDL_Surface *surface)
 //pixels inferior of the average in each line of pixels
 void findBloc_H(SDL_Surface *surface)
 {
-  //Variables
   int w = surface -> w;
   int h = surface -> h;
-  int average;
-  int blank;
   Uint8 r, g, b;
+  int blank;
+  int average;
 
   for (int i = 0; i < h; i++)
   {
-    average = average_findBloc_H(surface, i)*4;
+    average = average_findBloc_H(surface, i) * 6;
+    //average = 10;
     blank = -1;
 
     for (int j = 0; j < w; j++)
@@ -294,7 +297,7 @@ void findBloc_H(SDL_Surface *surface)
           int k = j - 1;
           while(blank > 0)
           {
-            Uint32 pix = SDL_MapRGB(surface -> format, 180, 200, 255);
+            Uint32 pix = SDL_MapRGB(surface -> format, 150, 200, 255);
             put_pixel(surface, k, i , pix);
             blank--;
             k--;
@@ -320,7 +323,8 @@ void findBloc_V(SDL_Surface *surface)
 
   for (int i = 0; i < w; i++)
   {
-    average = average_findBloc_V(surface, i) * 4;
+    average = average_findBloc_V(surface, i) * 10;
+    //average = 4;
     blank = -1;
 
     for (int j = 0; j < h; j++)
@@ -343,7 +347,7 @@ void findBloc_V(SDL_Surface *surface)
 
           while(blank > 0)
           {
-            Uint32 pix = SDL_MapRGB(surface -> format, 180, 200, 255);
+            Uint32 pix = SDL_MapRGB(surface -> format, 150, 200, 255);
             put_pixel(surface, i, k , pix);
             blank--;
             k--;
@@ -375,9 +379,9 @@ void VH(SDL_Surface *surface)
       Uint32 pixel2 = getpixel(surface2, i, j);
       SDL_GetRGB(pixel2, surface -> format, &r2, &g2, &b2);
 
-      if(r1 == 180 && r1 == r2)
+      if(r1 == 0 && r1 == r2)
       {
-        Uint32 pix = SDL_MapRGB(surface -> format, 200, 0, 0);
+        Uint32 pix = SDL_MapRGB(surface -> format, 0, 0, 0);
         put_pixel(surface, i, j , pix);
       }
     }
