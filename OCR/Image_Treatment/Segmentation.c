@@ -379,9 +379,9 @@ void VH(SDL_Surface *surface)
       Uint32 pixel2 = getpixel(surface2, i, j);
       SDL_GetRGB(pixel2, surface -> format, &r2, &g2, &b2);
 
-      if(r1 == 0 && r1 == r2)
+      if(r1 == 150 && r1 == r2)
       {
-        Uint32 pix = SDL_MapRGB(surface -> format, 0, 0, 0);
+        Uint32 pix = SDL_MapRGB(surface -> format, 150, 200, 255);
         put_pixel(surface, i, j , pix);
       }
     }
@@ -801,7 +801,7 @@ void isolateChar(SDL_Surface *surface)
             }
           }
 
-          display(character);
+          //display(character);
         }
       }
 
