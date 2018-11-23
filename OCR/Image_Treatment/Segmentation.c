@@ -17,6 +17,7 @@ int is_blank(SDL_Surface *surface, int x1, int x2, int y1, int y2);
 int is_space(SDL_Surface *surface, int x1, int x2, int y1, int y2, int average);
 int space_average(SDL_Surface *surface, int y1);
 void VH2(SDL_Surface *surface, SDL_Surface *surface1, SDL_Surface *surface2);
+int neighbor(SDL_Surface *surface, int x, int y);
 
 //Calculate the average of the number of pixels colored by
 //the RLSA algorithm in a line of pixels
@@ -297,7 +298,7 @@ void findBloc_H(SDL_Surface *surface)
           int k = j - 1;
           while(blank > 0)
           {
-            Uint32 pix = SDL_MapRGB(surface -> format, 150, 200, 255);
+            Uint32 pix = SDL_MapRGB(surface -> format, 0, 0, 0);
             put_pixel(surface, k, i , pix);
             blank--;
             k--;
@@ -347,7 +348,7 @@ void findBloc_V(SDL_Surface *surface)
 
           while(blank > 0)
           {
-            Uint32 pix = SDL_MapRGB(surface -> format, 150, 200, 255);
+            Uint32 pix = SDL_MapRGB(surface -> format, 0, 0, 0);
             put_pixel(surface, i, k , pix);
             blank--;
             k--;
@@ -379,9 +380,9 @@ void VH(SDL_Surface *surface)
       Uint32 pixel2 = getpixel(surface2, i, j);
       SDL_GetRGB(pixel2, surface -> format, &r2, &g2, &b2);
 
-      if(r1 == 150 && r1 == r2)
+      if(r1 == 0 && r2 == 255)
       {
-        Uint32 pix = SDL_MapRGB(surface -> format, 150, 200, 255);
+        Uint32 pix = SDL_MapRGB(surface -> format, 0, 0, 0);
         put_pixel(surface, i, j , pix);
       }
     }
@@ -906,4 +907,73 @@ int space_average(SDL_Surface *surface, int y1)
   }
 
   return 0;
+}
+
+int neighbor(SDL_Surface *surface, int x, int y)
+{
+  Uint32 pixel;
+  Uint8 r, g, b;
+  int neigh = 0;
+
+  for (int i = x - 1; i < x + 2; i++)
+  {
+    if(i >= 0 && i < surface -> w)
+    {
+      for (int j = y - 1; j < y + 2; j++)
+      {
+        if(j >= 0 && (i != x || j != y) && j < surface -> h)
+        {
+          pixel = getpixel(surface, i, j);
+          SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
+          if(r == 0 && g == 0 && g == 0)
+          {
+            neigh++;
+          }
+        }
+      }
+    }
+  }
+  return neigh;
+}
+
+void neigh(SDL_Surface *surface, int x, int y, int *xmin, int *xmax, int *ymin, int *ymax)
+{
+  Uint32 pixel;
+  Uint8 r, g, b;
+  if(x < *xmin)
+  {
+    *xmin = x;
+  }
+  if(x > *xmax)
+  {
+    *xmax = x;
+  }
+  if(y < *ymin)
+  {
+    *ymin = y;
+  }
+  if(y > *ymax)
+  {
+    *ymax = y;
+  }
+  pixel = SDL_MapRGB(surface -> format, 128, 128, 128);
+  put_pixel(surface, x, y, pixel);
+  for (int i = x - 1; i < x + 2; i++)
+  {
+    if(i >= 0 && i < surface -> w)
+    {
+      for (int j = y - 1; j < y + 2; j++)
+      {
+        if(j >= 0 && (i != x || j != y) && j < surface -> h)
+        {
+          pixel = getpixel(surface, i, j);
+          SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
+          if(r == 0 && g == 0 && g == 0)
+          {
+            neigh(surface, i, j, xmin, xmax, ymin, ymax);
+          }
+        }
+      }
+    }
+  }
 }
