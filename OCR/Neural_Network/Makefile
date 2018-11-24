@@ -1,21 +1,23 @@
-# Makefile
+# Simple Makefile
 
-CC = gcc -fsanitize=address
-CPPFLAGS = -MMD
-CFLAGS = -Wall -Wextra -std=c99 -O0 -g
-LDFLAGS =
-LDLIBS =
+# Compilers vars
+CC=gcc
+CPPFLAGS= -MMD
+CFLAGS= -Wall -Wextra -std=c99 -O2
+LDFLAGS=
+LDLIBS=
 
-OBJ = xor_struct.o
-DEP = ${OBJ:.o=.d}
+SRC= xor.c
+DEP= ${SRC:.c=.d}
+PRG= ${SRC:.c=}
 
-all: main
-
-main: ${OBJ}
-
-clean:
-	${RM} ${OBJ} ${DEP} main
+all: ${PRG}
 
 -include ${DEP}
 
-# END
+clean:
+	rm -f *.o
+	rm -f ${DEP}
+	rm -f ${PRG}
+
+# END Makefile
