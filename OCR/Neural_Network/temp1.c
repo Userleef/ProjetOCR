@@ -142,7 +142,7 @@ void error_calcul_modify_weights()
 
   // Hidden neurone
   for (size_t i = layer0; i < nbNeurones - 1; i++) {
-    dh = n[i].value * (1 - n[i].value) * dz * n[nbNeurones - 1].weightE[i - 2];
+    dh = n[i].value * (1 - n[i].value) * dz * n[4].weightE[i - 2];
   /*  printf("dh = %f\n", dh);
     printf("nV = %f\n", n[i].value);
     printf("dz = %f\n", dz);
@@ -236,23 +236,24 @@ int main()
   {
     //Apply_xor();
     int nH[1] = {4};
-    size_t b[2] = {2, 3};
-    init_network(2, nH, 1, 1, b, 2);
-    //add_link(3, 0);
-    //add_link(3, 1);
+    size_t b[] = {};
+    init_network(2, nH, 1, 1, b, 0);
+  //  add_link(3, 0);
+  //  add_link(3, 1);
+
 
     for (size_t i = 0; i < 100000; i++) {
 
-      change_value(0, 0, 0);
+      change_value(0, 0, 1);
       change_activation_values();
       error_calcul_modify_weights();
-      change_value(1, 0, 1);
+      change_value(1, 0, 0);
       change_activation_values();
       error_calcul_modify_weights();
-      change_value(0, 1, 1);
+      change_value(0, 1, 0);
       change_activation_values();
       error_calcul_modify_weights();
-      change_value(1, 1, 0);
+      change_value(1, 1, 1);
       change_activation_values();
       error_calcul_modify_weights();
 
@@ -261,18 +262,17 @@ int main()
 
 
     }
-
     printf("\n-------- Output after learning -------\n");
     change_value(0, 0, 0);
     change_activation_values();
     printf("[0 + 0 -> 0] z = %f\n", n[nbNeurones - 1].value);
-    change_value(0, 1, 1);
+    change_value(0, 1, 0);
     change_activation_values();
     printf("[0 + 1 -> 1] z = %f\n", n[nbNeurones - 1].value);
-    change_value(1, 0, 1);
+    change_value(1, 0, 0);
     change_activation_values();
     printf("[1 + 0 -> 1] z = %f\n", n[nbNeurones - 1].value);
-    change_value(1, 1, 0);
+    change_value(1, 1, 1);
     change_activation_values();
     printf("[1 + 1 -> 0] z = %f\n", n[nbNeurones - 1].value);
 
