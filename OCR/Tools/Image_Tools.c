@@ -81,7 +81,7 @@ void surface_matrice(SDL_Surface *surface,int h, int w, int matrice [h * w])
 }
 
 //Print in the terminal a character
-void print_matrice( int h, int w, int T[h * w])
+void print_matrice(int h, int w, int T[h * w])
 {
    int i, j ;
    for ( i = 0 ; i < h ; ++i )
@@ -92,7 +92,6 @@ void print_matrice( int h, int w, int T[h * w])
       }
       printf( "\n" ) ;
    }
-   printf( "\n" ) ;
 }
 
 void resize_char(int h, int w, int T[h * w], int matrice[28 * 28])

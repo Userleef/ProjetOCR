@@ -60,3 +60,51 @@ void binaryColor(SDL_Surface *surface)
     }
   }
 }
+
+// Resize the image
+SDL_Surface* resize(SDL_Surface *surface, int sizeW, int sizeH)
+{
+  //Variables
+  int w;
+  int h;
+  w = surface -> w;
+  h = surface -> h;
+  Uint8 r, g, b;
+
+  if(w < sizeW && h < sizeW)
+  {
+    return surface;
+  }
+
+  SDL_Surface* copy = surface;
+  SDL_Surface* small;
+
+  float coeff = (float) w / sizeW;
+  float coeff1 = (float) h / sizeH;
+
+  if(coeff1 > coeff)
+  {
+    coeff = coeff1;
+  }
+
+  small = SDL_CreateRGBSurface(SDL_HWSURFACE, w / coeff, h / coeff,
+                              surface -> format -> BitsPerPixel,0,0,0,0);
+
+  for (int i = 0; i < w; i++)
+  {
+    for (int j = 0; j < h; j++)
+    {
+      Uint32 pixel = getpixel(copy, i, j);
+      SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
+
+      Uint32 pix = SDL_MapRGB(copy -> format, r, g, b);
+      put_pixel(small, i / coeff, j / coeff, pix);
+    }
+  }
+  w = small -> w;
+  h = small -> h;
+
+  copy = small;
+
+  return copy;
+}
