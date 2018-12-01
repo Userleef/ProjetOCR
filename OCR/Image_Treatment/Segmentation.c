@@ -18,6 +18,7 @@ int is_space(SDL_Surface *surface, int x1, int x2, int y1, int y2, int average);
 int space_average(SDL_Surface *surface, int y1);
 void VH2(SDL_Surface *surface, SDL_Surface *surface1, SDL_Surface *surface2);
 int neighbor(SDL_Surface *surface, int x, int y);
+void discover_line(SDL_Surface *surface);
 
 //Calculate the average of the number of pixels colored by
 //the RLSA algorithm in a line of pixels
@@ -795,9 +796,13 @@ void isolateChar(SDL_Surface *surface)
             if(!is_blank(surface,x1,x2,y1,y2))
             {
               printf("---Char :\n");
-              int matrice[character -> h][character -> w];
-              surface_matrice(character,character -> h, character -> w, matrice);
-              print_matrice(character -> h, character -> w, matrice);
+              int matrice[(character -> h) * (character -> w)];
+              surface_matrice(character, character -> h, character -> w, matrice);
+              //print_matrice(character -> h, character -> w, matrice);
+              int T[28 * 28];
+              resize_char(character -> h, character -> w, matrice, T);
+              print_matrice(28, 28, T);
+              display(character);
               printf("----\n");
             }
           }
@@ -975,5 +980,45 @@ void neigh(SDL_Surface *surface, int x, int y, int *xmin, int *xmax, int *ymin, 
         }
       }
     }
+  }
+}
+
+void discover_line(SDL_Surface *surface)
+{
+  Uint32 pixel;
+  Uint8 r, g, b;
+  int x = 0;
+  int y = 0;
+
+  while (y < surface->h && x < surface->w)
+  {
+    int p = 1;
+    for (int j = 0; j < surface -> h && p; j++) {
+      for (int i = 0; i < surface -> w && p; i++) {
+        pixel = getpixel(surface, i, j);
+        SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
+        if(r == 0 && g == 0 && g == 0)
+        {
+          x = i;
+          y = j;
+          p = 0;
+        }
+      }
+    }
+    int xmin = x;
+    int xmax = x;
+    int ymin = y;
+    int ymax = y;
+    if (!p)
+    {
+      neigh(surface, x, y, &xmin, &xmax, &ymin, &ymax);
+      printf("%dxmin = , %dymin = , %dxmax = , %dymax\n",xmin , ymin, xmax, ymax);
+
+      SDL_Surface* img = copy_image(surface, xmin, xmax, ymin, ymax);
+      display(img);
+    }
+    y = ymax + 1;
+    x = xmin;
+    p = 1;
   }
 }

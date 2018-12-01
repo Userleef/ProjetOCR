@@ -2,30 +2,50 @@
 
 int main()
 {
-  char path[30] = "./Image_Test/archi.png";
+  char path[30] = "./Image_Test/ocr.png";
   SDL_Surface* surface = IMG_Load(path);
 
-  grayScale(surface);
+  /*grayScale(surface);
   binaryColor(surface);
   display(surface);
   VH(surface);
   findBloc_H(surface);
   display(surface);
-  /*lineCut(surface);
+  discover_line(surface);
+  lineCut(surface);
   display(surface);
   charcut(surface);
   display(surface);
-  isolateChar(surface);
-  display(surface);*/
+  isolateChar(surface);*/
+
+  int caractereActuel = 0;
+  FILE* txt = fopen("Character/a/0.txt", "r");
+  int T[28 * 28];
+  int i = 0;
+  if (txt != NULL)
+  {
+    while (i < 28 *28)
+    {
+      caractereActuel = fgetc(txt); // On lit le caractère
+
+      //T[i] = caractereActuel;
+      printf("%c", caractereActuel);
+      i++;
+    }
+  }
+
+  fclose(txt);
+
+  //print_matrice(28, 28, T);
 
 
-  Uint32 pixel;
+  /*Uint32 pixel;
   Uint8 r, g, b;
   int x = 0;
   int y = 0;
-  for (int i = 0; i < surface -> w && !x; i++) {
-    for (int j = 0; j < surface -> h && !x; j++) {
-      pixel = getpixel(surface, i, j);
+  for (int i = 0; i < surface -> h && !x; i++) {
+    for (int j = 0; j < surface -> w && !x; j++) {
+      pixel = getpixel(surface, j, i);
       SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
       if(r == 0 && g == 0 && g == 0)
       {
@@ -34,15 +54,15 @@ int main()
       }
     }
   }
-  printf("%d, %d\n",x , y);
-  int xmin1 = x;
-  int xmax1 = x;
-  int ymin1 = y;
-  int ymax1 = y;
-  neigh(surface, x, y, &xmin1, &xmax1, &ymin1, &ymax1);
+  int xmin = x;
+  int xmax = x;
+  int ymin = y;
+  int ymax = y;
+  neigh(surface, x, y, &xmin, &xmax, &ymin, &ymax);
+  printf("%d, %d, %d, %d\n",xmin , xmax, ymin, ymax);
 
-  SDL_Surface* img = copy_image(surface, xmin1, xmax1, ymin1, ymax1);
-  display(img);
+  SDL_Surface* img = copy_image(surface, xmin, xmax, ymin, ymax);
+  display(img);*/
   //findBloc_V(surface);
   //lineCut(surface);
   //charcut(surface);

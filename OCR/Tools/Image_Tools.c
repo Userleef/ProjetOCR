@@ -54,7 +54,7 @@ SDL_Surface* copy_image(SDL_Surface *img, int x1, int x2, int y1, int y2)
   return(copy);
 }
 
-void surface_matrice(SDL_Surface *surface,int h, int w, int matrice [h][w])
+void surface_matrice(SDL_Surface *surface,int h, int w, int matrice [h * w])
 {
   //Variables
   Uint32 pixel;
@@ -69,28 +69,87 @@ void surface_matrice(SDL_Surface *surface,int h, int w, int matrice [h][w])
 
       if(r == 0 && g == 0 && b == 0)
       {
-        matrice[i][j] = 1;
+        matrice[i * w +j] = 1;
       }
 
       else
       {
-        matrice[i][j] = 0;
+        matrice[i * w + j] = 0;
       }
     }
   }
 }
 
 //Print in the terminal a character
-void print_matrice( int h, int w, int T[h][w])
+void print_matrice( int h, int w, int T[h * w])
 {
    int i, j ;
    for ( i = 0 ; i < h ; ++i )
    {
       for ( j = 0 ; j < w ; ++j )
       {
-        printf( "%5d", T[i][j] ) ;
+        printf( "%d", T[i * w + j] ) ;
       }
-      printf("\n");
+      printf( "\n" ) ;
    }
    printf( "\n" ) ;
 }
+
+void resize_char(int h, int w, int T[h * w], int matrice[28 * 28])
+{
+  int plhg = (28 - h) / 2;
+  int plwg = (28 - w) / 2;
+
+  for (int i = 0; i < plhg; i++)
+  {
+    for (int j = 0; j < 28; j++)
+    {
+      matrice[i * 28 + j] = 0;
+    }
+  }
+
+  for (int i = 0; i < h; i++)
+  {
+    for (int j = 0; j < plwg; j++)
+    {
+      matrice[(i + plhg) * 28 + j] = 0;
+    }
+    for (int j = 0; j < w; j++)
+    {
+      matrice[(i + plhg) * 28 + j + plwg] = T[i * w + j];
+    }
+    for (int j = w + plwg; j < 28; j++)
+    {
+      matrice[(i + plhg) * 28 + j] = 0;
+    }
+  }
+
+  for (int i = h + plhg; i < 28; i++)
+  {
+    for (int j = 0; j <= 28; j++)
+    {
+      matrice[i * 28 + j] = 0;
+    }
+  }
+}
+
+/*int *convert_txt_to_array(int *array, char *path)
+{
+  FILE* txt = fopen(path, "r");
+  int T[28 *28];
+  int i = 0;
+  if (txt != NULL)const
+    {
+        // Boucle de lecture des caractères un à un
+        do
+        {
+            caractereActuel = fgetc(txt); // On lit le caractère
+            if (caractereActuel != "\n")
+            {
+              T[i] = caractereActuel;
+            }
+            i++;
+        } while (caractereActuel != EOF);
+
+  fclose(txt);
+}*/
