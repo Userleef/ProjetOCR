@@ -133,23 +133,22 @@ void resize_char(int h, int w, int T[h * w], int matrice[28 * 28])
   }
 }
 
-/*int *convert_txt_to_array(int *array, char *path)
+void convert_txt_to_array(int T[28 * 28], char *path)
 {
+  int caractereActuel = 0;
   FILE* txt = fopen(path, "r");
-  int T[28 *28];
   int i = 0;
-  if (txt != NULL)const
+  if (txt != NULL)
+  {
+    while (i < 28 *28)
     {
-        // Boucle de lecture des caractères un à un
-        do
-        {
-            caractereActuel = fgetc(txt); // On lit le caractère
-            if (caractereActuel != "\n")
-            {
-              T[i] = caractereActuel;
-            }
-            i++;
-        } while (caractereActuel != EOF);
-
+      caractereActuel = fgetc(txt); // On lit le caractère
+      if(caractereActuel != 10)
+      {
+        T[i] = caractereActuel - 48;
+        i++;
+      }
+    }
+  }
   fclose(txt);
-}*/
+}

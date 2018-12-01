@@ -17,26 +17,10 @@ int main()
   charcut(surface);
   display(surface);
   isolateChar(surface);*/
-
-  int caractereActuel = 0;
-  FILE* txt = fopen("Character/a/0.txt", "r");
   int T[28 * 28];
-  int i = 0;
-  if (txt != NULL)
-  {
-    while (i < 28 *28)
-    {
-      caractereActuel = fgetc(txt); // On lit le caractère
+  convert_txt_to_array(T, "Character/a/0.txt");
 
-      //T[i] = caractereActuel;
-      printf("%c", caractereActuel);
-      i++;
-    }
-  }
-
-  fclose(txt);
-
-  //print_matrice(28, 28, T);
+  print_matrice(28, 28, T);
 
 
   /*Uint32 pixel;
