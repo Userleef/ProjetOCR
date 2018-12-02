@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.22.1 -->
+<interface>
+  <requires lib="gtk+" version="3.20"/>
+  <object class="GtkWindow" id="window1">
+    <property name="can_focus">False</property>
+    <property name="opacity">0.80000000000000004</property>
+    <property name="type">popup</property>
+    <property name="title" translatable="yes">window1</property>
+    <property name="window_position">center</property>
+    <property name="type_hint">utility</property>
+    <property name="gravity">center</property>
+    <property name="has_resize_grip">True</property>
+    <signal name="destroy" handler="destroy" swapped="no"/>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkFixed" id="fixed1">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkFileChooserButton" id="Image">
+            <property name="width_request">100</property>
+            <property name="height_request">100</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="title" translatable="yes"/>
+            <signal name="file-set" handler="openfile" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">50</property>
+            <property name="y">100</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="learn">
+            <property name="label" translatable="yes">Learn</property>
+            <property name="width_request">100</property>
+            <property name="height_request">50</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="relief">half</property>
+            <signal name="clicked" handler="learn" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">175</property>
+            <property name="y">95</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="Result">
+            <property name="label" translatable="yes">Result</property>
+            <property name="width_request">100</property>
+            <property name="height_request">100</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <signal name="clicked" handler="result" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">300</property>
+            <property name="y">100</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="Title">
+            <property name="width_request">440</property>
+            <property name="height_request">54</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Purple Hat sOCRate Interface</property>
+            <attributes>
+              <attribute name="style" value="oblique"/>
+              <attribute name="weight" value="medium"/>
+              <attribute name="variant" value="small-caps"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="y">225</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="Quit">
+            <property name="label" translatable="yes">Quit</property>
+            <property name="width_request">100</property>
+            <property name="height_request">34</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="relief">none</property>
+            <property name="image_position">top</property>
+            <signal name="clicked" handler="on_Quit_clicked" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">178</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="Load">
+            <property name="width_request">100</property>
+            <property name="height_request">27</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Load Image</property>
+            <attributes>
+              <attribute name="underline" value="True"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="x">50</property>
+            <property name="y">50</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="width_request">100</property>
+            <property name="height_request">28</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Display Result</property>
+            <attributes>
+              <attribute name="style" value="normal"/>
+              <attribute name="underline" value="True"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="x">300</property>
+            <property name="y">50</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="Title1">
+            <property name="width_request">119</property>
+            <property name="height_request">36</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">###Version 1.2</property>
+            <attributes>
+              <attribute name="style" value="oblique"/>
+              <attribute name="weight" value="semilight"/>
+              <attribute name="variant" value="small-caps"/>
+            </attributes>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="Load1">
+            <property name="width_request">100</property>
+            <property name="height_request">46</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Get trained 
+SOCRATE !</property>
+            <property name="justify">center</property>
+            <property name="ellipsize">middle</property>
+            <attributes>
+              <attribute name="weight" value="semibold"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="x">175</property>
+            <property name="y">45</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="help">
+            <property name="label" translatable="yes">Help</property>
+            <property name="width_request">65</property>
+            <property name="height_request">34</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="relief">none</property>
+            <signal name="clicked" handler="help" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">375</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLevelBar" id="progress">
+            <property name="width_request">100</property>
+            <property name="height_request">60</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+          </object>
+          <packing>
+            <property name="x">175</property>
+            <property name="y">155</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="window2">
+    <property name="width_request">640</property>
+    <property name="can_focus">False</property>
+    <property name="margin_bottom">1</property>
+    <property name="title" translatable="yes">window2</property>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkFixed" id="fixed2">
+        <property name="width_request">640</property>
+        <property name="height_request">-1</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkTextView" id="textdisplay">
+            <property name="width_request">640</property>
+            <property name="height_request">400</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+          </object>
+          <packing>
+            <property name="y">56</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="title2">
+            <property name="width_request">191</property>
+            <property name="height_request">59</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Socrate's work !</property>
+            <property name="justify">center</property>
+            <property name="ellipsize">middle</property>
+            <attributes>
+              <attribute name="style" value="italic"/>
+              <attribute name="weight" value="bold"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="x">449</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="Quit1">
+            <property name="label" translatable="yes">Quit</property>
+            <property name="width_request">100</property>
+            <property name="height_request">56</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <signal name="clicked" handler="on_Quit_clicked" swapped="no"/>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="Home">
+            <property name="label" translatable="yes">Return Home</property>
+            <property name="width_request">100</property>
+            <property name="height_request">56</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <signal name="clicked" handler="return_home" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">200</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkFileChooserButton" id="Image1">
+            <property name="width_request">100</property>
+            <property name="height_request">56</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="action">save</property>
+            <property name="title" translatable="yes"/>
+            <signal name="file-set" handler="savefile" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">100</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="window3">
+    <property name="can_focus">False</property>
+    <property name="type">popup</property>
+    <property name="title" translatable="yes">window3</property>
+    <property name="window_position">center</property>
+    <property name="type_hint">menu</property>
+    <property name="gravity">center</property>
+    <property name="has_resize_grip">True</property>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkFixed" id="fixed3">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="width_request">440</property>
+            <property name="height_request">39</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Instructions for use</property>
+            <attributes>
+              <attribute name="underline" value="True"/>
+            </attributes>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="home">
+            <property name="label" translatable="yes">Return Home</property>
+            <property name="width_request">139</property>
+            <property name="height_request">38</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <signal name="clicked" handler="return_home" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">301</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="home1">
+            <property name="label" translatable="yes">Quit</property>
+            <property name="width_request">121</property>
+            <property name="height_request">24</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="relief">none</property>
+            <signal name="clicked" handler="on_Quit_clicked" swapped="no"/>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="width_request">440</property>
+            <property name="height_request">26</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+          </object>
+          <packing>
+            <property name="y">224</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="width_request">364</property>
+            <property name="height_request">184</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">1)    Click on the button behind "Load Image" 
+        and select it from your file chooser.
+
+2)    Click on the button "Learn" 
+         to let our OCR analyse your image.
+
+3)    Click on the button behind "Display Result"
+         to see what Socrate is able to do !</property>
+          </object>
+          <packing>
+            <property name="y">53</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="window4">
+    <property name="can_focus">False</property>
+    <property name="type">popup</property>
+    <property name="title" translatable="yes">window3</property>
+    <property name="window_position">center</property>
+    <property name="type_hint">menu</property>
+    <property name="gravity">center</property>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkFixed" id="fixed4">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="width_request">440</property>
+            <property name="height_request">63</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Welcome on our OCR !</property>
+            <attributes>
+              <attribute name="weight" value="bold"/>
+            </attributes>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="home3">
+            <property name="label" translatable="yes">Quit</property>
+            <property name="width_request">121</property>
+            <property name="height_request">24</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="relief">none</property>
+            <signal name="clicked" handler="on_Quit_clicked" swapped="no"/>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">BEGIN</property>
+            <property name="width_request">286</property>
+            <property name="height_request">154</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <signal name="clicked" handler="begin" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">75</property>
+            <property name="y">62</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="home2">
+            <property name="label" translatable="yes">Help</property>
+            <property name="width_request">100</property>
+            <property name="height_request">34</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <signal name="clicked" handler="help" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">340</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="width_request">147</property>
+            <property name="height_request">29</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <attributes>
+              <attribute name="underline" value="True"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="x">139</property>
+            <property name="y">221</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
