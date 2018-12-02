@@ -9,5 +9,8 @@ void displayPicture(SDL_Surface *surface);
 int surface_matrice(SDL_Surface *surface, int h, int w, int matrice [h * w]);
 void print_matrice( int h, int w, int T[h * w]);
 void resize_char(int h, int w, int T[h * w], int matrice[28 * 28]);
+char *concat(char *str1,char *str2);
+void append(char **str1, char *str2);
+void print_string(char *s);
 
 #endif

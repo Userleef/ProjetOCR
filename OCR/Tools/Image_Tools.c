@@ -151,3 +151,34 @@ void convert_txt_to_array(int T[28 * 28], char *path)
   }
   fclose(txt);
 }
+
+char *concat(char *str1,char *str2)
+{
+  size_t size = strlen(str1) + strlen(str2) + 1;
+
+  char *str = malloc(size *sizeof(char));
+
+  char *p = str;
+  while (*str1 != 0)
+    *(p++) = *(str1++);
+  while(*str2 != 0)
+    *(p++) = *(str2++);
+  *p = 0;
+
+  return str;
+}
+
+void append(char **str1, char *str2)
+{
+  size_t size1 = strlen(*str1);
+  size_t size = size1 + strlen(str2) + 1;
+
+  char *str = realloc(*str1,size * sizeof(char));
+  char *p = str + size1;
+  while (*str2 != 0)
+    *(p++) = *(str2++);
+  *p = 0;
+
+  *str1 = str;
+}
+

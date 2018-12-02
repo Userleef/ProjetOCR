@@ -8,7 +8,7 @@
 
 void lineCut(SDL_Surface *img);
 void charcut(SDL_Surface *surface);
-void isolateChar(SDL_Surface *surface);
+char * isolateChar(SDL_Surface *surface);
 int is_blank(SDL_Surface *surface, int x1, int x2, int y1, int y2);
 int is_space(SDL_Surface *surface, int x1, int x2, int y1, int y2, int average);
 int space_average(SDL_Surface *surface, int y1);
@@ -156,13 +156,14 @@ void charcut(SDL_Surface *surface)
 }
 
 //Identify each character of of a text
-void isolateChar(SDL_Surface *surface)
+char * isolateChar(SDL_Surface *surface)
 {
   //Variables
   Uint32 pixel;
   Uint8 r, g , b;
   int x1,x2,y1,y2;
   int save = 0;
+  char *result = concat("", "");
 
   for(int i = 0; i < (surface -> h) ; i++)
   {
@@ -217,6 +218,7 @@ void isolateChar(SDL_Surface *surface)
 
           if(is_space(surface,x1,x2,y1,y2,average)){
             printf("SPACE\n");
+            append(&result," ");
           }
           else
           {
@@ -232,12 +234,15 @@ void isolateChar(SDL_Surface *surface)
               print_matrice(28, 28, T);
               display(character);
               printf("----\n");
+              append(&result,"c");
             }
           }
 
           //display(character);
         }
       }
+
+      append(&result,"\n");
 
       printf("\\n\n");
     }
@@ -247,6 +252,8 @@ void isolateChar(SDL_Surface *surface)
         i = y2;
     }
   }
+
+  return result;
 }
 
 //Boolean that determine if a detected area is a not a character

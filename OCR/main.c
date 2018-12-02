@@ -2,7 +2,7 @@
 
 int main()
 {
-  char path[30] = "./Image_Test/ocr.png";
+  char path[30] = "./Image_Test/grand.png";
   SDL_Surface* surface = IMG_Load(path);
 
   grayScale(surface);
@@ -12,7 +12,12 @@ int main()
   display(surface);
   charcut(surface);
   display(surface);
-  isolateChar(surface);
+
+  char * result = isolateChar(surface);
+
+  printf("!!!Result :\n");
+  printf("%s", result);
+  printf("\n");
 
   return 0;
 }
