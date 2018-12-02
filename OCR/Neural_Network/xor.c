@@ -1,26 +1,23 @@
 #include <stdio.h>
 #include <math.h>
-#include "xor.h"
 #include <stdlib.h>
+#include "parser.h"
+#include "xor.h"
 
-
-
-void add_neurone(float v, float c)
+void add_neurone(float v, size_t c, float b)
 {
   Neurone neurone;
   neurone.value = v;
   neurone.couche = c;
   neurone.nbE = 0;
+  neurone.nbS = 0;
   neurone.bias = 0;
+  neurone.hasBias = b;
+  neurone.dz = 0;
   n[nbNeurones] = neurone;
   nbNeurones += 1;
 }
 
-void add_bias(size_t i)
-{
-  Neurone neurone;
-  n[i].bias = 0;
-}
 
 void init_weigths()
 {
@@ -32,55 +29,49 @@ void init_weigths()
           n[j].neuronesE[n[j].nbE] = i;
           n[j].nbE += 1;
         }
+        if(n[i].couche == n[j].couche + 1)
+        {
+          n[j].weightS[n[j].nbS] = 0;
+          n[j].neuronesS[n[j].nbS] = i;
+          n[j].nbS += 1;
+        }
       }
   }
 }
 
-void add_link(size_t n1, size_t n2)
+
+void init_network(size_t nI, size_t lH, size_t nO)
 {
-  n[n1].weightE[n[n1].nbE] = 0;
-  n[n1].neuronesE[n[n1].nbE] = n2;
-  n[n1].nbE += 1;
-}
-
-void init_table()
-{ // Initializes the weights to 0
-    for(int i = 0 ; i < 7 ; i++)
-    {
-      weight[i] = 0;
-    }
-}
-
-
-void init_network(size_t nI, int nH[], size_t lH, size_t nO, size_t b[], size_t lB)
-{
+  nbNeurones = 0;
   layer0 = nI;
+  lO = nO;
   for (size_t i = 0; i < nI; i++) {
-    add_neurone(0, 0);
+    add_neurone(0, 0, 0);
   }
   for (size_t i = 0; i < lH; i++) {
-    for (size_t j = 0; j < nH[i]; j++) {
-      add_neurone(0, 1 + i);
-    }
+      add_neurone(0.5f, 1, 1);
   }
   for (size_t i = 0; i < nO; i++) {
-    add_neurone(0.5f, lH + 1);
+    add_neurone(0.5f, 2, 1);
   }
   init_weigths();
 
-  for (size_t i = 0; i < lB; i++) {
-    add_bias(b[i]);
-  }
-
 }
 
-void change_value(float a, float b, float w)
+
+void change_value(float a[], size_t la, float w)
 {
-  n[0].value = a;
-  n[1].value = b;
+  test_value(a, la);
   wanted = w;
 }
 
+
+void test_value(float a[], size_t la)
+{
+  for (size_t i = 0; i < la; i++) {
+    n[i].value = a[i];
+  }
+}
 
 
 float sigmoid(float n)
@@ -92,29 +83,23 @@ float sigmoid(float n)
 void change_activation_values()
 { // Changes the activation values of hidden neurone and output neurone
   neth = 0;
-  for (size_t i = layer0; i < nbNeurones - 1; i++) {
+  for (size_t i = layer0; i < nbNeurones - lO; i++) {
     for (size_t j = 0; j < n[i].nbE; j++) {
-
       neth += n[n[i].neuronesE[j]].value * n[i].weightE[j];
     }
     neth += n[i].bias;
     n[i].value = sigmoid(neth);
   }
 
-  /*neth = x * weight[2] + bias_h * weight[4] + y * weight[5];
-  h = sigmoid(neth); // New activation value of the hidden cell*/
-
   size_t k = nbNeurones - 1;
   netz = 0;
-  for (size_t i = 0; i < n[k].nbE; i++) {
-    netz += n[n[k].neuronesE[i]].value * n[k].weightE[i];
+  for (size_t j = nbNeurones - lO; j < nbNeurones; j++) {
+    for (size_t i = 0; i < n[k].nbE; i++) {
+      netz += n[n[j].neuronesE[i]].value * n[j].weightE[i];
+    }
+    netz += n[j].bias;
+    n[j].value = sigmoid(netz);
   }
-  netz += n[k].bias;
-  n[k].value = sigmoid(netz);
-
-
-  /*netz = bias_z * weight[0] + x * weight[1] + h * weight[3] + y * weight[6];
-  z = sigmoid(netz); // New activation value of output cell*/
 }
 
 
@@ -126,173 +111,167 @@ float calculate_weight(float p, float cell, float entry)
 
 void error_calcul_modify_weights()
 { // Calculates the error of hidden and output neurones and modify the weights
-  size_t k = nbNeurones - 1;
   // Output neurone
-  dz = (wanted - n[k].value) * n[k].value * (1 - n[k].value);
-  for (size_t i = 0; i < n[k].nbE; i++) {
-    n[k].weightE[i] += calculate_weight(p, dz, n[n[k].neuronesE[i]].value);
+  float target;
+  for (size_t i = nbNeurones - lO; i < nbNeurones; i++) {
+    if(i - (nbNeurones - lO) == wanted){
+      target = 1;
+    }
+    else{
+      target = 0;
+    }
+    n[i].dz = (target - n[i].value) * n[i].value * (1 - n[i].value);
+    for (size_t j = 0; j < n[i].nbE; j++) {
+      n[i].weightE[j] += calculate_weight(p, n[i].dz, n[n[i].neuronesE[j]].value);
+      n[layer0 + j].weightS[i - (nbNeurones - lO)] = n[i].weightE[j];
+    }
+    if(n[i].hasBias == 1){
+      n[i].bias += calculate_weight(p, n[i].dz, 1);
+
+    }
   }
-  n[k].bias += calculate_weight(p, dz, 1);
-
-
-/*  weight[0] += calculate_weight(p, dz, bias_z);
-  weight[1] += calculate_weight(p, dz, x);
-  weight[3] += calculate_weight(p, dz, h);
-  weight[6] += calculate_weight(p, dz, y);*/
 
   // Hidden neurone
-  for (size_t i = layer0; i < nbNeurones - 1; i++) {
-    dh = n[i].value * (1 - n[i].value) * dz * n[nbNeurones - 1].weightE[i - 2];
-  /*  printf("dh = %f\n", dh);
-    printf("nV = %f\n", n[i].value);
-    printf("dz = %f\n", dz);
-    printf("S = %f\n", n[3].weightE[i - 2]);*/
+  float sdz;
+  size_t l;
+  for (size_t i = layer0; i < layer0 + lH; i++) {
+    sdz = 0;
+    l = 0;
+    for (size_t k = nbNeurones - lO; k < nbNeurones; k++) {
+      sdz += n[k].dz * n[i].weightS[l];
+      l += 1;
+    }
+    dh = n[i].value * (1 - n[i].value) * sdz;
     for (size_t j = 0; j < n[i].nbE; j++) {
       n[i].weightE[j] += calculate_weight(p, dh, n[n[i].neuronesE[j]].value);
     }
-  }
-  for (size_t i = layer0; i < nbNeurones - 1; i++) {
-    n[i].bias += calculate_weight(p, dz, 1);
-  }
-
-
-  /*dh = h * (1 - h) * dz * weight[3];
-  weight[2] += calculate_weight(p, dh, x);
-  weight[4] += calculate_weight(p, dh, bias_h);
-  weight[5] += calculate_weight(p, dh, y);*/
-}
-
-
-/*void Apply_xor()
-{ //Apply the xor
-  init_table();
-
-  // Shows initials output value for each possibility
-  printf("\n-------- Initials output -------\n");
-  init_neural_XOR(0, 0, 0);
-  change_activation_values();
-  printf("[0 + 0 -> 0] z = %f\n", z);
-  init_neural_XOR(0, 1, 1);
-  change_activation_values();
-  printf("[0 + 1 -> 1] z = %f\n", z);
-  init_neural_XOR(1, 0, 1);
-  change_activation_values();
-  printf("[1 + 0 -> 1] z = %f\n", z);
-  init_neural_XOR(1, 1, 0);
-  change_activation_values();
-  printf("[1 + 1 -> 0] z = %f\n", z);
-
-  for(int i = 0 ; i < 5000; i++)
-  { // Learning the neural network (5000 iterations)
-
-    init_neural_XOR(0, 0, 0);
-    change_activation_values();
-    error_calcul_modify_weights();
-
-    init_neural_XOR(0, 1, 1);
-    change_activation_values();
-    error_calcul_modify_weights();
-
-    init_neural_XOR(1, 0, 1);
-    change_activation_values();
-    error_calcul_modify_weights();
-
-    init_neural_XOR(1, 1, 0);
-    change_activation_values();
-    error_calcul_modify_weights();
-  }
-
-  printf("\n-------- Weights after Learning -------\n");
-  for (int i = 0; i < 7; i++) {
-    printf("Weight %d = %f\n", i, weight[i]);
-  }
-
-  printf("\n-------- Neural Network with weights indexes --------\n\n");
-  printf(" (bias_z)-0-(z)\n");
-  printf("            /|\\ \n");
-  printf("           / 3 \\ \n");
-  printf("          / (h) \\ \n");
-  printf("         1 / | \\ 6 \n");
-  printf("        / 2  4  5 \\ \n");
-  printf("       / /   |   \\ \\ \n");
-  printf("      (x) (bias_h) (y) \n\n");
-
-  printf("\n-------- Output after learning -------\n");
-  init_neural_XOR(0, 0, 0);
-  change_activation_values();
-  printf("[0 + 0 -> 0] z = %f\n", z);
-  init_neural_XOR(0, 1, 1);
-  change_activation_values();
-  printf("[0 + 1 -> 1] z = %f\n", z);
-  init_neural_XOR(1, 0, 1);
-  change_activation_values();
-  printf("[1 + 0 -> 1] z = %f\n", z);
-  init_neural_XOR(1, 1, 0);
-  change_activation_values();
-  printf("[1 + 1 -> 0] z = %f\n", z);
-}
-*/
-int main()
-  {
-    //Apply_xor();
-    int nH[1] = {4};
-    size_t b[2] = {2, 3};
-    init_network(2, nH, 1, 1, b, 2);
-    //add_link(3, 0);
-    //add_link(3, 1);
-
-    for (size_t i = 0; i < 100000; i++) {
-
-      change_value(0, 0, 0);
-      change_activation_values();
-      error_calcul_modify_weights();
-      change_value(1, 0, 1);
-      change_activation_values();
-      error_calcul_modify_weights();
-      change_value(0, 1, 1);
-      change_activation_values();
-      error_calcul_modify_weights();
-      change_value(1, 1, 0);
-      change_activation_values();
-      error_calcul_modify_weights();
-
-
-
-
-
+    if(n[i].hasBias == 1)
+    {
+      n[i].bias += calculate_weight(p, dh, 1);
     }
-
-    printf("\n-------- Output after learning -------\n");
-    change_value(0, 0, 0);
-    change_activation_values();
-    printf("[0 + 0 -> 0] z = %f\n", n[nbNeurones - 1].value);
-    change_value(0, 1, 1);
-    change_activation_values();
-    printf("[0 + 1 -> 1] z = %f\n", n[nbNeurones - 1].value);
-    change_value(1, 0, 1);
-    change_activation_values();
-    printf("[1 + 0 -> 1] z = %f\n", n[nbNeurones - 1].value);
-    change_value(1, 1, 0);
-    change_activation_values();
-    printf("[1 + 1 -> 0] z = %f\n", n[nbNeurones - 1].value);
+  }
+}
 
 
-    printf("Nombre de neurones = %zu\n", nbNeurones);
-    printf("---------COUCOU---------\n");
+size_t goodValue(size_t a)
+{
+  float max = -1;
+  size_t j = 0;
+  size_t maxI = 0;
+  for (size_t i = a; i < nbNeurones; i++) {
+    if(n[i].value > max)
+    {
+      maxI = j;
+      max = n[i].value;
+    }
+    j += 1;
+  }
+  return maxI;
+}
 
-    for (size_t i = 0; i < nbNeurones; i++) {
-      printf("------------------\n");
-      printf("neurone actuel = %f \n", n[i].value);
-      printf("couche actuel = %d \n", n[i].couche);
-      printf("Nombre de neurone entrants = %zu \n", n[i].nbE);
-      for (size_t j = 0; j < n[i].nbE; j++) {
-        printf("Neurone entrant = %zu \n", n[i].neuronesE[j]);
-        printf("Poids neurone entrant = %f \n", n[i].weightE[j]);
-        printf("         ******          \n");
+void pars(size_t b, size_t e, char path[])
+{
+  for (size_t i = b; i < e; i++) {
+    Char letter;
+    TabChar[i] = letter;
+    path[17] = abc[i];
+    //printf("%s\n", path);
+    char *path_ = path;
+    parser(TabChar[i].tab, path_);
+    /*for (size_t j = 0; j < 28; j++) {
+      for (size_t k = 0; k < 28; k++) {
+        printf("%i", TabChar[i].tab[j * 28 + k]);
+      }
+      printf("\n");
+    }*/
+  }
+}
+void init_char()
+{
+  char path1[25] = "../Character/min/ /0.txt";
+  pars(0, 26, path1);
+  char path2[25] = "../Character/maj/ /0.txt";
+  pars(26, 52, path2);
+  char path3[25] = "../Character/sep/ /0.txt";
+  pars(52, 62, path3);
+
+
+}
+
+void Training(size_t ite, size_t len)
+{
+  int pourcent = 0;
+  for (size_t i = 0; i < ite; i++) {
+    if(i % (ite/10)  == 0)
+    {
+      printf("Avancement de l'apprentissage : %d / 100 \n", pourcent);
+      pourcent += 10;
+    }
+    for (size_t j = 0; j < 62; j++) {
+      change_value(TabChar[j].tab, len, j);
+      change_activation_values();
+      error_calcul_modify_weights();
+    }
+  }
+}
+
+int Testing()
+{
+  int t = 0;
+  for (size_t i = 0; i < 62; i++) {
+    test_value(TabChar[i].tab, 784);
+    change_activation_values();
+    printf("%c -> ", abc[i]);
+    if(abc[goodValue(nbNeurones - lO)] == abc[i])
+      {
+        printf("True\n");
+        t += 1;
+      }
+      else { printf("False (%c)\n", abc[goodValue(nbNeurones - lO)]); }
+  }
+  return t;
+}
+
+void HardTest()
+{
+  int curTest = 0;
+  for (size_t i = 70; i < 71; i+=5) {
+      for (float k = 0.222f; k < 0.242f; k+=0.004f) {
+        int t;
+        p = k;
+        init_network(len, i, 76);
+        Training(700, len);
+        for (size_t j = 0; j < 8; j++) {
+          Training(50, len);
+          t = Testing();
+          printf("%d\n", t);
+          if(t > tMax)
+          {
+            tMax = t;
+            pMax = k;
+            hMax = i;
+            iteMax = 700 + 50 * j;
+          }
+          curTest += 1;
+          printf("Iteration : %d / 60\n", curTest);
+
+        }
+
       }
     }
+}
 
-    printf("z = %f\n", n[nbNeurones - 1].value);
+int main()
+{
+    lH = 60;
+    p = 0.222f;
 
+    len = 784;
+    int t = 0;
+    init_char();
+    init_network(len, lH, 62);
+    Training(850, len);
+    t = Testing();
+    printf("%d / lH = %zu / p = %f\n", t, lH, p);
 
-  }
+}
