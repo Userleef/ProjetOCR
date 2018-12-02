@@ -2,7 +2,7 @@
 
 int main()
 {
-  char path[30] = "./Image_Test/grand.png";
+  char path[30] = "./Image_Test/archi.png";
   SDL_Surface* surface = IMG_Load(path);
 
   grayScale(surface);

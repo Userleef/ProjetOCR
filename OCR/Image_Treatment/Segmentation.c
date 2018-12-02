@@ -12,6 +12,7 @@ char * isolateChar(SDL_Surface *surface);
 int is_blank(SDL_Surface *surface, int x1, int x2, int y1, int y2);
 int is_space(SDL_Surface *surface, int x1, int x2, int y1, int y2, int average);
 int space_average(SDL_Surface *surface, int y1);
+int count_black(SDL_Surface *surface);
 
 void lineCut(SDL_Surface *surface)
 {
@@ -232,9 +233,20 @@ char * isolateChar(SDL_Surface *surface)
               int T[28 * 28];
               resize_char(character -> h, character -> w, matrice, T);
               print_matrice(28, 28, T);
-              display(character);
+              
+              if(count_black(character) <= 10)
+              {
+                append(&result,".");
+                printf("---Point\n");
+              }
+              else
+              {
+                append(&result,"c");
+              }
+
+              //display(character);
               printf("----\n");
-              append(&result,"c");
+
             }
           }
 
@@ -254,6 +266,30 @@ char * isolateChar(SDL_Surface *surface)
   }
 
   return result;
+}
+
+int count_black(SDL_Surface *surface)
+{
+  //Variables
+  Uint32 pixel;
+  Uint8 r, g , b;
+  int Black = 0;
+
+  for(int i = 0;i < surface -> w; i++)
+  {
+    for(int j = 0;j < surface -> h; j++)
+    {
+      pixel = getpixel(surface, i, j);
+      SDL_GetRGB(pixel, surface -> format, &r, &g, &b);
+
+      if(r == 0 && g == 0 && b == 0)
+      {
+        Black++;
+      }
+    }
+  }
+
+  return Black;
 }
 
 //Boolean that determine if a detected area is a not a character
