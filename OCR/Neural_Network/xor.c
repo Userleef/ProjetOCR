@@ -4,8 +4,75 @@
 #include "parser.h"
 #include "xor.h"
 
-void add_neurone(float v, size_t c, float b)
+
+// Variables
+
+size_t len;
+float nbweights; // Number of weights
+float weight[7]; // Array of weights
+
+float x; // Input value
+float y; // Input value
+float z = 0.5f; // Output value
+float h = 0.5f; //  Hidden neurone value
+float wanted = 0; // Expected output
+
+float p; // Pace
+
+
+float dh; // Value of the hidden neurone error
+
+float netz; // Used for the activation calcutation
+float neth; // Used for the activation calculation
+
+float bias_h = 1; // Bias of the hidden neurone
+float bias_z = 1; // Bias of the output neurone
+
+typedef struct Char Char;
+struct Char //Structure of a character in the alphabet
 {
+  float tab[784];
+};
+
+Char TabChar[78];
+
+typedef struct Neurone Neurone;
+struct Neurone // Structure of a neuron
+{
+
+  size_t neuronesE[784]; // Entering neurons of a neuron 
+  size_t neuronesS[784]; // Exiting neurons of a neuron
+  float weightE[784]; // Entering weights
+  float weightS[784]; // Exiting weights
+  size_t nbE; // Number of entering neurons
+  size_t nbS; // Number of exiting neurons
+  float value; // Value of a neuron
+  size_t couche; // Layer of a neuron
+  int hasBias; // if has a bias
+  float bias; // Value of bias weight
+  float dz; // Value of error of output neurons
+};
+
+size_t lO = 0; // Number of neurons in the layer of output cells
+size_t lH = 0; // Number of neurons in the layer of hiddens cells
+size_t cH = 0; // Number of hidden layers
+size_t nbNeurones = 0; // Number of neurons in the network
+size_t layer0 = 0; // Number of neurons in the layer of input cells
+Neurone n[1000] = {}; // Array of neurons
+Neurone bias[2] = {}; 
+size_t nbBias = 0;
+
+int tMax = 0;
+float pMax = 0;
+size_t hMax = 0;
+size_t iteMax = 0;
+
+char abc[63] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+//char path[24];
+
+
+void add_neurone(float v, size_t c, float b)
+{ // Add a neuron
   Neurone neurone;
   neurone.value = v;
   neurone.couche = c;
@@ -20,7 +87,7 @@ void add_neurone(float v, size_t c, float b)
 
 
 void init_weigths()
-{
+{ // Init each weights of neurons
   for (size_t j = 0; j < nbNeurones; j++) {
       for (size_t i = 0; i < nbNeurones; i++) {
         if(n[i].couche == n[j].couche - 1)
@@ -40,11 +107,13 @@ void init_weigths()
 }
 
 
-void init_network(size_t nI, size_t lH, size_t nO)
-{
+void init_network(size_t nI, size_t lH1, size_t nO, float p1)
+{ // Init the neural network
+  p = p1;
   nbNeurones = 0;
   layer0 = nI;
   lO = nO;
+  lH = lH1;
   for (size_t i = 0; i < nI; i++) {
     add_neurone(0, 0, 0);
   }
@@ -60,14 +129,14 @@ void init_network(size_t nI, size_t lH, size_t nO)
 
 
 void change_value(float a[], size_t la, float w)
-{
+{ // Change the values of inputs for training
   test_value(a, la);
   wanted = w;
 }
 
 
 void test_value(float a[], size_t la)
-{
+{ // Change the values of inputs for testing
   for (size_t i = 0; i < la; i++) {
     n[i].value = a[i];
   }
@@ -154,7 +223,7 @@ void error_calcul_modify_weights()
 
 
 size_t goodValue(size_t a)
-{
+{ // Verify if the network recognize a character
   float max = -1;
   size_t j = 0;
   size_t maxI = 0;
@@ -170,38 +239,31 @@ size_t goodValue(size_t a)
 }
 
 void pars(size_t b, size_t e, char path[])
-{
+{ // Parser 
   for (size_t i = b; i < e; i++) {
     Char letter;
     TabChar[i] = letter;
-    path[17] = abc[i];
-    //printf("%s\n", path);
+    path[16] = abc[i];
     char *path_ = path;
     parser(TabChar[i].tab, path_);
-    /*for (size_t j = 0; j < 28; j++) {
-      for (size_t k = 0; k < 28; k++) {
-        printf("%i", TabChar[i].tab[j * 28 + k]);
-      }
-      printf("\n");
-    }*/
   }
 }
 void init_char()
-{
-  char path1[25] = "../Character/min/ /0.txt";
+{ // Initialize the data base
+  char path1[25] = "./Character/min/ /0.txt";
   pars(0, 26, path1);
-  char path2[25] = "../Character/maj/ /0.txt";
+  char path2[25] = "./Character/maj/ /0.txt";
   pars(26, 52, path2);
-  char path3[25] = "../Character/sep/ /0.txt";
+  char path3[25] = "./Character/sep/ /0.txt";
   pars(52, 62, path3);
 
 
 }
 
 void Training(size_t ite, size_t len)
-{
+{ // Train the network
   int pourcent = 0;
-  for (size_t i = 0; i < ite; i++) {
+  for (size_t i = 0; i <= ite; i++) {
     if(i % (ite/10)  == 0)
     {
       printf("Avancement de l'apprentissage : %d / 100 \n", pourcent);
@@ -214,6 +276,18 @@ void Training(size_t ite, size_t len)
     }
   }
 }
+void print_matrice2(int h, int w, float T[h * w])
+{
+   int i, j ;
+   for ( i = 0 ; i < h ; ++i )
+   {
+      for ( j = 0 ; j < w ; ++j )
+      {
+        printf( "%d", (int)T[i * w + j] ) ;
+      }
+      printf( "\n" ) ;
+   }
+}
 
 int Testing()
 {
@@ -222,56 +296,15 @@ int Testing()
     test_value(TabChar[i].tab, 784);
     change_activation_values();
     printf("%c -> ", abc[i]);
-    if(abc[goodValue(nbNeurones - lO)] == abc[i])
-      {
-        printf("True\n");
-        t += 1;
-      }
-      else { printf("False (%c)\n", abc[goodValue(nbNeurones - lO)]); }
   }
   return t;
 }
 
-void HardTest()
+char find_char(float* T)
 {
-  int curTest = 0;
-  for (size_t i = 70; i < 71; i+=5) {
-      for (float k = 0.222f; k < 0.242f; k+=0.004f) {
-        int t;
-        p = k;
-        init_network(len, i, 76);
-        Training(700, len);
-        for (size_t j = 0; j < 8; j++) {
-          Training(50, len);
-          t = Testing();
-          printf("%d\n", t);
-          if(t > tMax)
-          {
-            tMax = t;
-            pMax = k;
-            hMax = i;
-            iteMax = 700 + 50 * j;
-          }
-          curTest += 1;
-          printf("Iteration : %d / 60\n", curTest);
-
-        }
-
-      }
-    }
-}
-
-int main()
-{
-    lH = 60;
-    p = 0.222f;
-
-    len = 784;
-    int t = 0;
-    init_char();
-    init_network(len, lH, 62);
-    Training(850, len);
-    t = Testing();
-    printf("%d / lH = %zu / p = %f\n", t, lH, p);
-
+  //print_matrice2(28, 28, T);
+  //printf("lO : %zu\n", lO);
+  test_value(T,784);
+  change_activation_values();
+  return abc[goodValue(nbNeurones - lO)];
 }

@@ -81,20 +81,20 @@ void surface_matrice(SDL_Surface *surface,int h, int w, int matrice [h * w])
 }
 
 //Print in the terminal a character
-void print_matrice(int h, int w, int T[h * w])
+void print_matrice(int h, int w, float T[h * w])
 {
    int i, j ;
    for ( i = 0 ; i < h ; ++i )
    {
       for ( j = 0 ; j < w ; ++j )
       {
-        printf( "%d", T[i * w + j] ) ;
+        printf( "%d", (int)T[i * w + j] ) ;
       }
       printf( "\n" ) ;
    }
 }
 
-void resize_char(int h, int w, int T[h * w], int matrice[28 * 28])
+void resize_char(int h, int w, int T[h * w], float matrice[28 * 28])
 {
   int plhg = (28 - h) / 2;
   int plwg = (28 - w) / 2;
@@ -152,6 +152,7 @@ void convert_txt_to_array(int T[28 * 28], char *path)
   fclose(txt);
 }
 
+/*
 char *concat(char *str1,char *str2)
 {
   size_t size = strlen(str1) + strlen(str2) + 1;
@@ -165,8 +166,8 @@ char *concat(char *str1,char *str2)
     *(p++) = *(str2++);
   *p = 0;
 
-  return str;
-}
+  return str ;
+}*/
 
 void append(char **str1, char *str2)
 {
@@ -181,4 +182,27 @@ void append(char **str1, char *str2)
 
   *str1 = str;
 }
+
+char* concat2(const char *s1, const char *s2)
+{
+    //+1 for the null-terminator
+    char *result = malloc(strlen(s1) + strlen(s2) + 1);
+
+    //in real code you would check for errors in malloc here
+    strcpy(result, s1);
+    strcat(result, s2);
+    return result;
+}
+
+/*void append(char **str1, char str2)
+{
+  size_t size1 = strlen(*str1);
+  size_t size = size1 + 2;
+
+  char *str = realloc(*str1,size * sizeof(char));
+  char *p = str + size1;
+  p++;
+  *p = str2;
+  *str1 = str;
+}*/
 

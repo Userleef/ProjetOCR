@@ -11,5 +11,6 @@
 #include "Image_Treatment/Segmentation.h"
 #include "Tools/display.h"
 #include "Neural_Network/xor.h"
+#include <gtk/gtk.h>
 
 #endif

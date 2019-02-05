@@ -5,6 +5,7 @@
 #include "../Tools/Image_Tools.h"
 #include "../Tools/display.h"
 #include "Treatment.h"
+#include "../Neural_Network/xor.h"
 
 void lineCut(SDL_Surface *img);
 void charcut(SDL_Surface *surface);
@@ -164,7 +165,8 @@ char * isolateChar(SDL_Surface *surface)
   Uint8 r, g , b;
   int x1,x2,y1,y2;
   int save = 0;
-  char *result = concat("", "");
+  //char *result = concat("", "");
+  char *result = "";
 
   for(int i = 0; i < (surface -> h) ; i++)
   {
@@ -218,34 +220,47 @@ char * isolateChar(SDL_Surface *surface)
           SDL_Surface* character = copy_image(surface,x1,x2,y1,y2);
 
           if(is_space(surface,x1,x2,y1,y2,average)){
-            printf("SPACE\n");
-            append(&result," ");
+            //printf("SPACE\n");
+            //append(&result," ");
+            //strcat(result," ");
+            //printf(" ");
+            result = concat2(result," ");
           }
           else
           {
             if(!is_blank(surface,x1,x2,y1,y2))
             {
-              printf("---Char :\n");
+              //printf("---Char :\n");
               int matrice[(character -> h) * (character -> w)];
               character = resize(character, 28, 28);
               surface_matrice(character, character->h, character->w, matrice);
               //print_matrice(character -> h, character -> w, matrice);
-              int T[28 * 28];
+              float T[28 * 28];
               resize_char(character -> h, character -> w, matrice, T);
-              print_matrice(28, 28, T);
+              //print_matrice(28, 28, T);
+
+              char charac = find_char(T);
+              //printf("---character : %c\n", charac);
               
               if(count_black(character) <= 10)
               {
-                append(&result,".");
-                printf("---Point\n");
+                //append(&result,".");
+                //strcat(result,".");
+                printf(".");
+                //result = concat2(result,".");
               }
               else
               {
-                append(&result,"c");
+                //append(&result, &charac);
+                //result = concat2(result,charac);
+
+                
+                //strcat(result, &charac);
+                printf("%c", charac);
               }
 
               //display(character);
-              printf("----\n");
+              //printf("\n");
 
             }
           }
@@ -254,9 +269,11 @@ char * isolateChar(SDL_Surface *surface)
         }
       }
 
-      append(&result,"\n");
+      //append(&result,"\n");
+      //strcat(result,"\n");
+      //result = concat2(result,"\n");
 
-      printf("\\n\n");
+      printf("\n");
     }
 
     if( y2 != save)
@@ -264,6 +281,8 @@ char * isolateChar(SDL_Surface *surface)
         i = y2;
     }
   }
+
+  //printf("%s\n", result);
 
   return result;
 }

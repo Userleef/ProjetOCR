@@ -8,7 +8,7 @@ CFLAGS = -Wall -Wextra -std=c99 -g
 LDFLAGS =
 LDLIBS= `pkg-config gtk+-3.0 --libs sdl` -lSDL_image -lm
 
-SRC = main.c Image_Treatment/Treatment.c Tools/Image_Tools.c Image_Treatment/Segmentation.c Tools/display.c 
+SRC = main.c Image_Treatment/Treatment.c Tools/Image_Tools.c Image_Treatment/Segmentation.c Tools/display.c Neural_Network/parser.c Neural_Network/xor.c
 OBJ= $(SRC:.c=.o)
 DEP= $(SRC:.c=.d)
 
